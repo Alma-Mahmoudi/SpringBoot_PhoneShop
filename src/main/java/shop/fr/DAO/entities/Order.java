@@ -1,6 +1,7 @@
 package shop.fr.DAO.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,8 +39,9 @@ public class Order {
 	@Column(name="CustomerEmail",length=100, nullable=true)
     private String customerEmail;
 	
-	@OneToMany(mappedBy = "order")
-    private List<OrderItem> items;
+	@OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    private List<Product> products = new ArrayList<>();
 
 	public Order() {}
 	public Order(Date orderDate, double totalAmount, String status, String customerName, String customerEmail) {
