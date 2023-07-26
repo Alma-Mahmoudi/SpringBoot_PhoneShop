@@ -30,9 +30,13 @@ public class ProductController {
 	@Autowired
 	private ProductRepository productRepository;
 	
+	public ProductController(ProductService productService) {
+		this.productService = productService ; 
+	}
+	
 	@GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);	;
+        return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);	
     }
 
     @GetMapping("/{productId}")

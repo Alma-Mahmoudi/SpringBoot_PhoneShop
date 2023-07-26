@@ -19,7 +19,6 @@ import javax.persistence.*;
 @Table(name="T_ORDER") 
 public class Order {
 
-	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -100,6 +99,19 @@ public class Order {
 	public void setCustomerEmail(String customerEmail) {
 		this.customerEmail = customerEmail;
 	}
+	//Get Products 
+	public List<Product> getProducts() {
+        return products;
+    }
+	//Add Products 
+	public void setProducts(List<Product> products) {
+        this.products.clear();
+        if (products != null) {
+            this.products.addAll(products);
+        }
+    }
+	
+	
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", orderDate=" + orderDate + ", totalAmount=" + totalAmount + ", status=" + status
