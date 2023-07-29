@@ -13,13 +13,18 @@ import shop.fr.DAO.repositories.OrderRepository;
 import shop.fr.DAO.repositories.ProductRepository;
 import shop.fr.services.OrderService;
 
+/**
+ * OrderServiceImpl is an implementation of the OrderService interface.
+ * It provides methods to manage orders and their associated products in the system.
+ */
+
 @Service
 public class OrderServiceImpl implements OrderService{
 
 	@Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 	@Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
 
 	public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository) {
@@ -38,44 +43,67 @@ public class OrderServiceImpl implements OrderService{
     }
 	
 	@Override
-    public void deleteOrder(Long orderId) {
-		orderRepository.deleteById(orderId);
-    }
-	
-	public Order createOrder(List<Long> productIds) {
-        List<Product> products = productRepository.findAllById(productIds);
-        if (products.isEmpty()) {
-            throw new IllegalArgumentException("Les produits spécifiés sont introuvables.");
-        }
-
-        Order order = new Order();
-        order.setProducts(products);
-        order.setOrderDate(new Date()); // Utiliser la date actuelle
+	public Order createOrder(Order order) {
+        order.setOrderDate(new Date());   // Utiliser la date actuelle
+        order.updateTotalAmount();        // Mettre à jour le totalAmount
         order.setStatus("En attente");
-       
         return orderRepository.save(order);
     }
 	
+	@Override
+	public Order updateOrder(Long orderId, Order newOrder) {
+		Order oldOrder = getOrderById(orderId);
+		updateOrderFields(oldOrder,newOrder);
+		return orderRepository.save(oldOrder);
+	}
+	
+	private void updateOrderFields(Order oldOrder, Order newOrder) {
+		oldOrder.setCustomerEmail(newOrder.getCustomerEmail());
+		oldOrder.setCustomerName(newOrder.getCustomerName());
+		oldOrder.setStatus(newOrder.getStatus());
+		oldOrder.updateTotalAmount();
+		oldOrder.setOrderDate(new Date());
+	}	
+	
+	@Override
+    public void deleteOrder(Long orderId) {
+		orderRepository.deleteById(orderId);
+    }
+
+	//-----------------------------------------
+	@Override
+	public Order addProductToOrder(Long orderId,Long productId) {
+		
+		Order order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new NoSuchElementException("La commande spécifiée est introuvable :" + productId));
+
+		Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NoSuchElementException("Product not found with ID: " + productId));
+	  
+		order.getProducts().add(product);
+	    order.updateTotalAmount();      // Mettre à jour le totalAmount
+	    order.setOrderDate(new Date()); // Utiliser la date actuelle
+	    order.setStatus("En attente");
+	    return orderRepository.save(order);
+	}
+	@Override
 	public Order removeProductFromOrder(Long orderId, Long productId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order == null) {
-            throw new IllegalArgumentException("La commande spécifiée est introuvable.");
-        }
+		Order order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new NoSuchElementException("La commande spécifiée est introuvable :" + productId));
 
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product == null) {
-            throw new IllegalArgumentException("Le produit spécifié est introuvable.");
-        }
-
-        if (!order.getProducts().contains(product)) {
+		Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NoSuchElementException("Product not found with ID: " + productId));
+       
+		if (!order.getProducts().contains(product)) {
             throw new IllegalArgumentException("Le produit n'appartient pas à la commande.");
         }
 
         order.getProducts().remove(product);
+        double NewTotalAmount =  order.getTotalAmount() - product.getPrice();
+        order.setTotalAmount(NewTotalAmount);;
         return orderRepository.save(order);
     }
 
-	//Update
 	
 	
 }

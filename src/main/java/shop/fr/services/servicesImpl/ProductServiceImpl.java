@@ -10,15 +10,20 @@ import shop.fr.DAO.entities.Product;
 import shop.fr.DAO.repositories.ProductRepository;
 import shop.fr.services.ProductService;
 
+/**
+ * ProductServiceImpl is an implementation of the ProductService interface.
+ * It provides methods to manage products in the system.
+ */
 @Service
 public class ProductServiceImpl implements ProductService{
 
 	@Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
 	public ProductServiceImpl(ProductRepository productRepository) {
 		this.productRepository = productRepository ;
 	}
+	
 	@Override
     public List<Product> getAllProducts() {
         return this.productRepository.findAll();
@@ -38,16 +43,18 @@ public class ProductServiceImpl implements ProductService{
     }
 
 	@Override
-	public Product updateProduct(Long productId,Product product) {
-		Product OldProduct =  getProductById(productId);
-		
-		OldProduct.setProductName(product.getProductName());
-		OldProduct.setDescription(product.getDescription());
-		OldProduct.setPrice(product.getPrice());
-		OldProduct.setQuantityAvailable(product.getQuantityAvailable());
-		
-		return productRepository.save(OldProduct);
+	public Product updateProduct(Long productId,Product newProduct) {
+		Product oldProduct = getProductById(productId);
+        updateProductFields(oldProduct, newProduct);
+        return productRepository.save(oldProduct);
 	
 	}
+	
+	private void updateProductFields(Product oldProduct, Product newProduct) {
+        oldProduct.setProductName(newProduct.getProductName());
+        oldProduct.setDescription(newProduct.getDescription());
+        oldProduct.setPrice(newProduct.getPrice());
+        oldProduct.setQuantityAvailable(newProduct.getQuantityAvailable());
+    }
 	
 }

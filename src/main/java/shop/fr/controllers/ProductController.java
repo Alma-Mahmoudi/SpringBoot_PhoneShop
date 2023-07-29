@@ -20,6 +20,12 @@ import shop.fr.DAO.entities.Product;
 import shop.fr.DAO.repositories.ProductRepository;
 import shop.fr.services.ProductService;
 
+/**
+ * ProductController is a RESTful API controller that handles HTTP requests related to products.
+ * It provides endpoints for retrieving, creating, updating, and deleting products.
+ * The base path for all product-related requests is "/api/products". 
+ * http://localhost:4666/api/products
+ */
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -30,33 +36,72 @@ public class ProductController {
 	@Autowired
 	private ProductRepository productRepository;
 	
+	/**
+     * Constructs a new instance of ProductController.
+     *
+     * @param productService The ProductService to be used for handling product-related operations.
+     */
 	public ProductController(ProductService productService) {
 		this.productService = productService ; 
 	}
 	
+	  /**
+     * Retrieves a list of all products.
+     *
+     * @return ResponseEntity with a list of Product objects representing all available products, and an HTTP status of 200 OK.
+     */
 	@GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);	
     }
 
+	 /**
+     * Retrieves a product with the specified ID.
+     *
+     * @param productId The ID of the product to retrieve.
+     * @return ResponseEntity with the Product object corresponding to the given product ID, and an HTTP status of 200 OK.
+     *         If the product is not found, it returns an HTTP status of 404 Not Found.
+     */
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable("productId") Long productId){
 		return new ResponseEntity<>(productService.getProductById(productId) ,HttpStatus.OK);
 	}
 
+    /**
+     * Creates a new product.
+     *
+     * @param product The Product object to be created.
+     * @return ResponseEntity with the newly created Product object and an HTTP status of 200 OK.
+     */
     @PostMapping
-    public ResponseEntity<Product> createSujet(@RequestBody Product product) {
-		return ResponseEntity.ok().body(productService.createProduct(product));
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    	Product createdProduct = productService.createProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
-  //update sujet by id 
+    /**
+     * Updates an existing product with the specified ID.
+     *
+     * @param productId The ID of the product to update.
+     * @param product   The updated Product object.
+     * @return ResponseEntity with the updated Product object and an HTTP status of 200 OK.
+     *         If the product is not found, it returns an HTTP status of 404 Not Found.
+     */
   	@PutMapping("/{productId}")
   	public ResponseEntity<Product> update (@PathVariable("productId") Long productId, @RequestBody Product product){  		
-  		return ResponseEntity.ok(productService.updateProduct(productId, product));
+  		Product updatedProduct = productService.updateProduct(productId, product);
+        return ResponseEntity.ok(updatedProduct);
   	}
   	
+  	/**
+     * Deletes a product with the specified ID.
+     *
+     * @param productId The ID of the product to delete.
+     * @return ResponseEntity with a Map containing the "deleted" key set to true if the product is deleted successfully,
+     *         and an HTTP status of 200 OK. If the product is not found, it returns an HTTP status of 404 Not Found.
+     */
     @DeleteMapping("/{productId}")
-	public ResponseEntity<Map<String , Boolean>> deleteSujet(@PathVariable Long productId){
+	public ResponseEntity<Map<String , Boolean>> deleteProduct(@PathVariable Long productId){
 		Product product=productService.getProductById(productId);			
 		productRepository.delete(product);
 		Map<String ,Boolean> response =new HashMap<>();
