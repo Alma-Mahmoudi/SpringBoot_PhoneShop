@@ -44,8 +44,8 @@ public class PhoneShopApplication {
     public void init() {
 		
 		// Insert some sample products into the database at application startup
-        Product product1 = new Product("Produit 1", "Description du produit 1", 10.0, 1);
-        Product product2 = new Product("Produit 2", "Description du produit 2", 20.0, 2);
+		  Product product1 = new Product("Produit 1", "Description 1", 10.0, 50);
+		  Product product2 = new Product("Produit 2", "Description 2", 15.0, 30);
 //        Product product3 = new Product("Produit 3", "Description du produit 3", 30.0, 3);
 //        Product product4 = new Product("Produit 4", "Description du produit 4", 40.0, 4);
 //        Product product5 = new Product("Produit 5", "Description du produit 5", 50.0, 5);

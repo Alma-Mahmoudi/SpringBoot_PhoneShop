@@ -2,14 +2,20 @@ package shop.fr.tests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import shop.fr.DAO.entities.Product;
+import shop.fr.DAO.repositories.ProductRepository;
 import shop.fr.services.ProductService;
+import shop.fr.services.servicesImpl.ProductServiceImpl;
 import shop.fr.controllers.ProductController;
 
 import java.util.*;
@@ -21,16 +27,19 @@ import static org.mockito.Mockito.*;
  * Unit tests for the ProductController class.
  */
 
-@WebMvcTest
+@SpringBootTest
 public class ProductRestControllerTest {
 
 	// Mock the ProductService
-    @Mock
+	@MockBean
     private ProductService productService;
 
  // Inject the mock ProductService into the ProductController
     @InjectMocks
     private ProductController productController;
+    
+    @MockBean
+    private ProductRepository productRepository;
 
     // Initialize Mockito annotations
     @BeforeEach
@@ -88,6 +97,7 @@ public class ProductRestControllerTest {
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(responseEntity.getBody()).isNull();
+        assertThat("Aucun cProduct avec cette id est trouvé dans la BDD");
     }
     
     /**
@@ -165,7 +175,7 @@ public class ProductRestControllerTest {
      */
     @Test
     public void testDeleteProduct_ProductNotFound() {
-        // Mock the productService.getProductById() method
+        // Mock the productService.getProductById() method to return null
         when(productService.getProductById(1L)).thenReturn(null);
 
         // Call the controller method
@@ -173,6 +183,6 @@ public class ProductRestControllerTest {
 
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(responseEntity.getBody().get("deleted")).isEqualTo(Boolean.FALSE);
+        assertThat(responseEntity.getBody()).isNull();
     }
 }

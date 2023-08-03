@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import shop.fr.DAO.entities.Product;
 import shop.fr.DAO.repositories.ProductRepository;
@@ -43,11 +45,13 @@ public class ProductServiceImpl implements ProductService{
     }
 
 	@Override
-	public Product updateProduct(Long productId,Product newProduct) {
-		Product oldProduct = getProductById(productId);
-        updateProductFields(oldProduct, newProduct);
-        return productRepository.save(oldProduct);
-	
+	public Product updateProduct(Long productId, Product newProduct) {
+	    Product oldProduct = getProductById(productId);
+	    if (oldProduct != null) {
+	        updateProductFields(oldProduct, newProduct);
+	        return productRepository.save(oldProduct);
+	    }
+	    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No product found with id: " + productId);
 	}
 	
 	private void updateProductFields(Product oldProduct, Product newProduct) {

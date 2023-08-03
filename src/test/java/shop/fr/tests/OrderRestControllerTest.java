@@ -1,14 +1,20 @@
 package shop.fr.tests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import shop.fr.DAO.entities.Order;
+import shop.fr.DAO.repositories.OrderRepository;
 import shop.fr.services.OrderService;
+import shop.fr.services.servicesImpl.OrderServiceImpl;
 import shop.fr.controllers.OrderController;
 
 import java.util.*;
@@ -19,17 +25,21 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for the OrderController class.
  */
-@WebMvcTest
+
+@SpringBootTest
 public class OrderRestControllerTest {
 
 	// Mock the OrderService
     @Mock
-    private OrderService orderService;
+    private OrderServiceImpl orderService;
 
  // Inject the mock OrderService into the OrderController
     @InjectMocks
     private OrderController orderController;
 
+    @MockBean
+    private OrderRepository orderRepository ; 
+    
     // Initialize Mockito annotations
     @BeforeEach
     public void setup() {
@@ -65,7 +75,7 @@ public class OrderRestControllerTest {
         when(orderService.getOrderById(1L)).thenReturn(order);
 
         // Call the controller method
-        ResponseEntity<Order> responseEntity = orderController.getProductById(1L);
+        ResponseEntity<Order> responseEntity = orderController.getOrderById(1L);
 
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -82,7 +92,7 @@ public class OrderRestControllerTest {
         when(orderService.getOrderById(1L)).thenReturn(null);
 
         // Call the controller method
-        ResponseEntity<Order> responseEntity = orderController.getProductById(1L);
+        ResponseEntity<Order> responseEntity = orderController.getOrderById(1L);
 
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -116,7 +126,7 @@ public class OrderRestControllerTest {
         when(orderService.getOrderById(1L)).thenReturn(orderToDelete);
 
         // Call the controller method
-        ResponseEntity<Map<String, Boolean>> responseEntity = orderController.deletOrder(1L);
+        ResponseEntity<Map<String, Boolean>> responseEntity = orderController.deleteOrder(1L);
 
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -133,11 +143,11 @@ public class OrderRestControllerTest {
         when(orderService.getOrderById(1L)).thenReturn(null);
 
         // Call the controller method
-        ResponseEntity<Map<String, Boolean>> responseEntity = orderController.deletOrder(1L);
+        ResponseEntity<Map<String, Boolean>> responseEntity = orderController.deleteOrder(1L);
 
         // Verify the response
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(responseEntity.getBody().get("deleted")).isEqualTo(Boolean.FALSE);
+        assertThat(responseEntity.getBody()).isNull();
     }
 
 }

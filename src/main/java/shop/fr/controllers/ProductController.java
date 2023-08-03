@@ -64,7 +64,13 @@ public class ProductController {
      */
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable("productId") Long productId){
-		return new ResponseEntity<>(productService.getProductById(productId) ,HttpStatus.OK);
+    	Product product = productService.getProductById(productId);
+
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
 	}
 
     /**
@@ -90,7 +96,11 @@ public class ProductController {
   	@PutMapping("/{productId}")
   	public ResponseEntity<Product> update (@PathVariable("productId") Long productId, @RequestBody Product product){  		
   		Product updatedProduct = productService.updateProduct(productId, product);
-        return ResponseEntity.ok(updatedProduct);
+  		 if (updatedProduct != null) {
+  	        return ResponseEntity.ok(updatedProduct);
+  	    } else {
+  	        return ResponseEntity.notFound().build();
+  	    }
   	}
   	
   	/**
@@ -100,13 +110,18 @@ public class ProductController {
      * @return ResponseEntity with a Map containing the "deleted" key set to true if the product is deleted successfully,
      *         and an HTTP status of 200 OK. If the product is not found, it returns an HTTP status of 404 Not Found.
      */
-    @DeleteMapping("/{productId}")
-	public ResponseEntity<Map<String , Boolean>> deleteProduct(@PathVariable Long productId){
-		Product product=productService.getProductById(productId);			
-		productRepository.delete(product);
-		Map<String ,Boolean> response =new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return ResponseEntity.ok(response);
-		}
+  	@DeleteMapping("/{productId}")
+  	public ResponseEntity<Map<String, Boolean>> deleteProduct(@PathVariable Long productId) {
+  	    Product product = productService.getProductById(productId);
+
+  	    if (product != null) {
+  	        productRepository.delete(product);
+  	        Map<String, Boolean> response = new HashMap<>();
+  	        response.put("deleted", Boolean.TRUE);
+  	        return ResponseEntity.ok(response);
+  	    } else {
+  	        return ResponseEntity.notFound().build();
+  	    }
+  	}
 	
 }

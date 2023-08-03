@@ -2,11 +2,14 @@ package shop.fr.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import shop.fr.DAO.entities.Product;
 
 /**
  * ProductService interface provides methods for managing products.
  */
+@Service
 public interface ProductService {
 	
 	/**

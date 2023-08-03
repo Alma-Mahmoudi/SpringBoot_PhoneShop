@@ -59,10 +59,15 @@ public class OrderController {
      * @return A ResponseEntity containing the Order object corresponding to the given order ID, or a NOT_FOUND status if the order is not found.
      */
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getProductById(@PathVariable("orderId") Long orderId){
-    	Order order = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(order);
-	}
+    public ResponseEntity<Order> getOrderById(@PathVariable("orderId") Long orderId){
+        Order order = orderService.getOrderById(orderId);
+        
+        if (order != null) {
+            return ResponseEntity.ok(order);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     /**
      * Creates a new order.
@@ -82,13 +87,18 @@ public class OrderController {
      * @return A ResponseEntity containing a map indicating that the order was successfully deleted, or a NOT_FOUND status if the order is not found.
      */
     @DeleteMapping("/{orderId}")
-	public ResponseEntity<Map<String , Boolean>> deletOrder(@PathVariable Long orderId){
-		Order order=orderService.getOrderById(orderId);			
-		orderRepository.delete(order);
-		Map<String ,Boolean> response =new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return ResponseEntity.ok(response);
-		}
+    public ResponseEntity<Map<String, Boolean>> deleteOrder(@PathVariable Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+
+        if (order != null) {
+            orderRepository.delete(order);
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("deleted", Boolean.TRUE);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     //-------------------------
     

@@ -2,11 +2,14 @@ package shop.fr.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import shop.fr.DAO.entities.Order;
 
 /**
  * OrderService interface provides methods for managing orders.
  */
+@Service
 public interface OrderService {
 
 	/**
